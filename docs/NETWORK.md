@@ -2,6 +2,24 @@
 
 Muse 的 API、长连接和 GitHub 都要能从**音箱本身**访问。电脑浏览器能打开，不代表音箱已经走代理。
 
+## 连项目本身都下载不了
+
+如果电脑能访问 GitHub、音箱不能，先在电脑下载 [v0.1.0 安装包](https://github.com/StorK2025/thinksmart-muse-music/releases/tag/v0.1.0) 中的 `thinksmart-muse-music-v0.1.0.zip`。电脑 PowerShell 上传（路径/IP 换成自己的）：
+
+```powershell
+scp "C:\Users\你的用户名\Downloads\thinksmart-muse-music-v0.1.0.zip" ubuntu@音箱IP:/home/ubuntu/
+```
+
+进入音箱 SSH，再解压：
+
+```bash
+sudo apt-get install -y unzip
+unzip ~/thinksmart-muse-music-v0.1.0.zip -d ~/
+cd ~/thinksmart-muse-music-v0.1.0
+```
+
+之后本页及 README 中所有 `cd ~/thinksmart-muse-music` 都改成这个实际解压目录，再按下文准备网络。若电脑 Clash 已允许局域网，也可以使用 `git -c http.proxy=http://电脑局域网IP:端口 clone --branch v0.1.0 --depth 1 https://github.com/StorK2025/thinksmart-muse-music.git` 下载。
+
 ## 已有可用代理：最短路径
 
 音箱已有 Mihomo / Clash，端口 7890：
