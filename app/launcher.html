@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>小麦 · Muse 与音乐</title>
+<style>
+:root {color-scheme:dark;font-family:system-ui,"Noto Sans CJK SC",sans-serif}
+* {box-sizing:border-box} body {margin:0;min-height:100vh;display:grid;place-items:center;color:#f6f8fd;background:radial-gradient(at 10% 20%,#184555,transparent 60%),#0d1725}
+main {width:min(1050px,90vw)} h1 {font-size:44px;margin:0 0 12px} .intro {font-size:22px;color:#a5bac8;margin-bottom:32px}
+.cards {display:grid;grid-template-columns:1fr 1fr;gap:24px} a {color:inherit;text-decoration:none;border:1px solid #ffffff25;border-radius:30px;padding:35px;min-height:245px;display:flex;flex-direction:column;justify-content:space-between;touch-action:manipulation}
+.music {background:linear-gradient(135deg,#ac243c,#512139)} .voice {background:linear-gradient(135deg,#146774,#173c58)} .icon{font-size:48px} h2{font-size:29px;margin:15px 0 8px} p{font-size:18px;color:#d2e0e7;line-height:1.6;margin:0} footer{color:#88a3b4;text-align:center;margin-top:28px;font-size:17px}
+@media(max-width:650px){.cards{grid-template-columns:1fr}main{padding:25px 0}h1{font-size:34px}a{min-height:210px}}
+</style>
+<main><h1>小麦 · Muse 与音乐</h1><p class="intro">说“小麦小麦”，聊一聊，或听一首喜欢的歌。</p>
+<div class="cards">
+<a class="music" href="https://music.163.com/" data-app="music"><span class="icon">♫</span><div><h2>网易云音乐</h2><p>点歌 · 歌词 · 我的歌单 · 循环播放</p></div></a>
+<a class="voice" href="http://127.0.0.1:8090/" data-app="voice"><span class="icon">✦</span><div><h2>和 Muse 聊天</h2><p>查看对话、调整音量和唤醒设置</p></div></a>
+</div><footer>语音唤醒保持待命 · 登录状态在本机保存</footer></main>
+<script>
+document.querySelectorAll('[data-app]').forEach(link=>link.addEventListener('click',event=>{
+  const handler=window.webkit?.messageHandlers?.thinksmartNav;
+  if(handler){event.preventDefault();handler.postMessage(JSON.stringify({cmd:link.dataset.app}));}
+}));
+</script>
+</html>

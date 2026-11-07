@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ $EUID -eq 0 ]] || { echo '请使用 sudo thinksmart-muse-pair'; exit 2; }
+STATE_DIR=/var/lib/musegadget
+TOKEN_FILE="$STATE_DIR/sdk_token"
+case "${1:-}" in
+  --resume)
+    [[ -s "$TOKEN_FILE" ]] || { echo '还没有 Token，请先运行 sudo thinksmart-muse-pair'; exit 2; }
+    ;;
+  --stdin)
+    IFS= read -r token || { echo '未收到完整输入，没有保存。'; exit 2; }
+    ;;
+  '')
+    [[ -t 0 ]] || { echo '当前连接没有交互终端。请使用普通 ssh 登录，或参考 docs/PAIRING.md 的无终端方案。'; exit 2; }
+    printf '粘贴 Muse SDK Token（不会显示），然后按 Enter：' >&2
+    IFS= read -r -s token
+    printf '\n' >&2
+    ;;
+  *) echo '用法: sudo thinksmart-muse-pair [--resume|--stdin]'; exit 2 ;;
+esac
+if [[ "${1:-}" != --resume ]]; then
+  token="${token%$'\r'}"
+  if [[ ! "$token" =~ ^mgst_[A-Za-z0-9_-]{42}[AEIMQUYcgkosw048]$ ]]; then
+    unset token
+    echo 'Token 格式不正确，未保存。请从 Muse Gadgets 重新复制，不要粘贴到聊天中。' >&2
+    exit 2
+  fi
+  install -d -o root -g root -m 0700 "$STATE_DIR"
+  tmp=$(mktemp "$STATE_DIR/.sdk-token.XXXXXX")
+  trap 'rm -f -- "$tmp"' EXIT
+  chmod 0600 "$tmp"
+  printf '%s\n' "$token" > "$tmp"
+  unset token
+  mv -f -- "$tmp" "$TOKEN_FILE"
+  trap - EXIT
+fi
+# Written by the installer from a validated, credential-free proxy URL.
+if [[ -f /etc/thinksmart-muse/proxy.env ]]; then
+  set -a
+  source /etc/thinksmart-muse/proxy.env
+  set +a
+fi
+export PYTHONUNBUFFERED=1
+systemctl restart musegadget.service
+echo 'Token 已保存。请把手机放在旁边，打开 Muse → Settings → Devices → Developer mode → Add Device。'
+echo '选择下方显示的 MuseGadget 名称，在约 10 分钟内完成配对。'
+exec /usr/local/bin/musegadget pair

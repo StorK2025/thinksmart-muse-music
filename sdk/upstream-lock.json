@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/facebookincubator/muse-gadget-sdk",
+  "commit": "463bd2a05380fea4211b0099ad0f70933c108b20",
+  "sha256": {
+    "network.py": "c210c092d63b6a085cd174f64e78180b7c76ebae0757e2c2881f0682cb60076b",
+    "service.py": "3a1e52e14b4e9b42af515dd147ed82a34779b63f66857ff4abdcbb18c0b757c0",
+    "link_client.py": "b7983af46079ff01ec1d8e658916c35c2875f466dd77b22e339f8a681c96ee48"
+  }
+}

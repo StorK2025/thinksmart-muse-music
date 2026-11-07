@@ -1,0 +1,43 @@
+name: Source and regression checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test dependencies and the pinned official SDK
+        run: |
+          python -m pip install PyYAML playwright
+          git clone --filter=blob:none --no-checkout https://github.com/facebookincubator/muse-gadget-sdk.git /tmp/muse-sdk
+          git -C /tmp/muse-sdk checkout --detach 463bd2a05380fea4211b0099ad0f70933c108b20
+          python -m pip install /tmp/muse-sdk/linux
+          python -m pip install --require-hashes -r /tmp/muse-sdk/linux/src/musegadget/data/requirements.lock
+      - name: Syntax, shell and public source
+        run: |
+          python -m compileall -q app hub sdk scripts tests
+          node --check app/kiosk-tools.js
+          bash -n install.sh scripts/thinksmart-muse-pair
+          shellcheck -e SC1091 install.sh scripts/thinksmart-muse-pair
+          python scripts/check-public.py
+      - name: Offline regressions
+        run: |
+          python tests/verify_muse_direct.py
+          python tests/verify_muse_network.py
+          python tests/verify_muse_service.py
+          python -m unittest discover -s tests -p 'test_*.py'
+      - name: Synthetic player UI (no account or music network access)
+        run: |
+          python -m playwright install --with-deps chromium
+          python tests/check_player_ui.py

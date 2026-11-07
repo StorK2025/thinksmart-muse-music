@@ -1,0 +1,22 @@
+name: 使用问题
+description: 提交脱敏后的安装、配对或音乐问题
+body:
+  - type: markdown
+    attributes:
+      value: 请不要上传 Token、订阅、Cookie、完整配置、私人聊天或整盘备份。先运行本机 --doctor。
+  - type: input
+    id: version
+    attributes:
+      label: 设备型号 / 镜像版本 / 本项目版本
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: 操作步骤、预期结果和实际现象
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: 脱敏的错误类型或 doctor 状态
